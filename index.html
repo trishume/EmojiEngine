@@ -37,14 +37,13 @@
   </head>
   <body>
     <canvas id="c"></canvas>
-    <div id="b"><a href="http://twgljs.org">twgl.js - 2d lines</a></div>
   </body>
   <script id="vs" type="notjs">
 uniform mat4 u_matrix;
 
 attribute vec2 a_position;
 void main() {
-  gl_Position = u_matrix * vec4(a_position, a_position.x, 1);
+  gl_Position = u_matrix * vec4(a_position, 0, 1);
   gl_PointSize = 8.0;
 }
   </script>
