@@ -11,7 +11,7 @@ const textures = twgl.createTextures(gl, {
   }
 });
 
-const numItems = 90000;
+const numItems = 80000;
 const emojiDim = 49;
 const state = {
   aspect: 1.0,
@@ -19,6 +19,8 @@ const state = {
   mouseY: 0,
   altKey: false,
   mouseButtons: 0,
+  gravity: false,
+  friction: false,
   velocity: twgl.primitives.createAugmentedTypedArray(2, numItems),
 }
 const arrays = {
@@ -73,9 +75,26 @@ function update(state, arrays) {
     position[i] += velocity[i];
     position[i+1] += velocity[i+1];
 
-    // velocity[i+1] -= gravity;
-    velocity[i] *= friction;
-    velocity[i+1] *= friction;
+    if(state.gravity) velocity[i+1] -= gravity;
+    if(state.friction) {
+      velocity[i] *= friction;
+      velocity[i+1] *= friction;
+    }
+
+    if(state.mouseButtons == 0 || state.altKey) {
+      if(position[i] < 0) {
+        velocity[i] = Math.abs(velocity[i]);
+      }
+      if(position[i] > state.aspect) {
+        velocity[i] = -Math.abs(velocity[i]);
+      }
+      if(position[i+1] < 0) {
+        velocity[i+1] = Math.abs(velocity[i+1]);
+      }
+      if(position[i+1] > 1.0) {
+        velocity[i+1] = -Math.abs(velocity[i+1]);
+      }
+    }
   }
 
   if(state.mouseButtons > 0) {
@@ -89,23 +108,6 @@ function update(state, arrays) {
       const dist2 = dx*dx + dy*dy;
       velocity[i] += factor*(dx/dist2)
       velocity[i+1] += factor*(dy/dist2)
-    }
-  }
-
-  if(state.mouseButtons == 0 || state.altKey) {
-    for (let i = 0; i < numItems*3; i += 3) {
-      if(position[i] < 0) {
-        velocity[i] = Math.abs(velocity[i]);
-      }
-      if(position[i] > state.aspect) {
-        velocity[i] = -Math.abs(velocity[i]);
-      }
-      if(position[i+1] < 0) {
-        velocity[i+1] = Math.abs(velocity[i+1]);
-      }
-      if(position[i+1] > 1.0) {
-        velocity[i+1] = -Math.abs(velocity[i+1]);
-      }
     }
   }
 }
@@ -149,6 +151,15 @@ function mouse(event) {
   state.altKey = event.altKey;
 }
 
+function key(event) {
+  if(event.charCode == 'f'.charCodeAt(0)) {
+    state.friction = !state.friction;
+  }
+  if(event.charCode == 'g'.charCodeAt(0)) {
+    state.gravity = !state.gravity;
+  }
+}
+
 function init() {
   initialize_data(state, arrays);
   requestAnimationFrame(render);
@@ -156,6 +167,7 @@ function init() {
   document.addEventListener('mousemove', mouse);
   document.addEventListener('mousedown', mouse);
   document.addEventListener('mouseup', mouse);
+  document.addEventListener('keypress', key);
 }
 
 window.onload = init;
