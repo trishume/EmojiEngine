@@ -11,13 +11,15 @@ const textures = twgl.createTextures(gl, {
   }
 });
 
-const numItems = 10000;
+const numItems = 50000;
+const emojiDim = 49;
 const state = {
   aspect: 1.0,
   velocity: twgl.primitives.createAugmentedTypedArray(2, numItems),
 }
 const arrays = {
-  position: twgl.primitives.createAugmentedTypedArray(2, numItems),
+  position: twgl.primitives.createAugmentedTypedArray(3, numItems),
+  info: twgl.primitives.createAugmentedTypedArray(3, numItems, Uint8Array),
 };
 
 function rand(min, max) {
@@ -33,19 +35,28 @@ const uniforms = {
 function initialize(state, arrays) {
   const velocity = state.velocity;
   const position = arrays.position;
-  for (let i = 0; i < numItems*2; i += 2) {
+  for (let i = 0; i < numItems*3; i += 3) {
     position[i] = rand(0,state.aspect);
     position[i+1] = rand(0,0.5);
+    position[i+2] = i/numItems;
     velocity[i] = rand(-0.005,0.005);
     velocity[i+1] = rand(-0.005,0.005);
   }
+
+  const info = arrays.info;
+  for (let i = 0; i < numItems*3; i += 3) {
+    info[i] = rand(0,emojiDim);
+    info[i+1] = rand(0,emojiDim);
+    info[i+2] = rand(8.0,16.0);
+  }
+  console.log(info)
 }
 
 function update(state, arrays) {
   const gravity = 0.001;
   const velocity = state.velocity;
   const position = arrays.position;
-  for (let i = 0; i < numItems*2; i += 2) {
+  for (let i = 0; i < numItems*3; i += 3) {
     position[i] += velocity[i];
     position[i+1] += velocity[i+1];
 
@@ -79,7 +90,7 @@ function render(time) {
   const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
 
   gl.enable(gl.DEPTH_TEST);
-  gl.enable(gl.CULL_FACE);
+  // gl.enable(gl.CULL_FACE);
   gl.clearColor(1,1,1,1);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
