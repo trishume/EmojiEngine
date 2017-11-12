@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <!--
+
+    @license twgl.js Copyright (c) 2015, Gregg Tavares All Rights Reserved.
+    Available via the MIT license.
+    see: http://github.com/greggman/twgl.js for details
+
+    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+    <title>twgl.js - 2d lines</title>
+    <style>
+      body {
+          margin: 0;
+          font-family: monospace;
+      }
+      canvas {
+          display: block;
+          width: 100vw;
+          height: 100vh;
+      }
+      #b {
+        position: absolute;
+        top: 10px;
+        width: 100%;
+        text-align: center;
+        z-index: 2;
+        color: white;
+      }
+      a:visited, a:link, a:active {
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <div id="b"><a href="http://twgljs.org">twgl.js - 2d lines</a></div>
+  </body>
+  <script id="vs" type="notjs">
+uniform mat4 u_matrix;
+uniform vec4 u_offsets;
+uniform vec4 u_centers;
+uniform vec4 u_mult;
+
+attribute vec2 a_position;
+attribute vec3 a_color;
+
+varying vec3 v_color;
+
+#define PI 3.14159
+
+void main() {
+  vec2 offset = mix(u_offsets.xz, u_offsets.yw, a_position.y);
+  float a = u_mult.x * a_position.x * PI * 2.0 + offset.x;//mix(u_offsets.x, u_offsets.y, a_position.y);
+  float c = cos(a * u_mult.y);
+  vec2 xy = vec2(
+    cos(a),
+    sin(a)) * c * offset.y +
+    mix(u_centers.xy, u_centers.zw, a_position.y);
+  gl_Position = u_matrix * vec4(xy, 0, 1);
+  v_color = a_color;
+}
+  </script>
+  <script id="fs" type="notjs">
+precision mediump float;
+
+varying vec3 v_color;
+
+void main() {
+  gl_FragColor = vec4(v_color,1);
+}
+  </script>
+  <script src="vendor/twgl-full.js"></script>
+  <script src="vendor/chroma.min.js"></script>
+  <script src="main.js"></script>
+</html>
+
+
+
