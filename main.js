@@ -4,6 +4,13 @@ twgl.setDefaults({attribPrefix: "a_"});
 const gl = document.getElementById("c").getContext("webgl");
 const programInfo = twgl.createProgramInfo(gl, ["vs", "fs"]);
 
+const textures = twgl.createTextures(gl, {
+  emoji: {
+    src: "img/sheet_apple_32_2048.png",
+    min: gl.NEAREST_MIPMAP_NEAREST,
+  }
+});
+
 const numItems = 10000;
 const state = {
   aspect: 1.0,
@@ -19,6 +26,8 @@ function rand(min, max) {
 
 const uniforms = {
   u_matrix: m4.identity(),
+  u_emoji: textures.emoji,
+  u_emojiScale: window.devicePixelRatio,
 };
 
 function initialize(state, arrays) {
@@ -40,7 +49,7 @@ function update(state, arrays) {
     position[i] += velocity[i];
     position[i+1] += velocity[i+1];
 
-    velocity[i+1] -= gravity;
+    // velocity[i+1] -= gravity;
 
     if(position[i] < 0) {
       velocity[i] = Math.abs(velocity[i]);
@@ -60,10 +69,11 @@ function update(state, arrays) {
 function render(time) {
   time *= 0.001;
 
-  twgl.resizeCanvasToDisplaySize(gl.canvas);
+  twgl.resizeCanvasToDisplaySize(gl.canvas, window.devicePixelRatio);
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
   state.aspect = aspect;
+  uniforms.u_emojiScale = window.devicePixelRatio;
 
   update(state, arrays);
   const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
@@ -72,6 +82,9 @@ function render(time) {
   gl.enable(gl.CULL_FACE);
   gl.clearColor(1,1,1,1);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  // gl.enable(gl.BLEND);
+  // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
   m4.ortho(0, aspect, 0, 1, -1, 10000000, uniforms.u_matrix);
 

@@ -40,18 +40,23 @@
   </body>
   <script id="vs" type="notjs">
 uniform mat4 u_matrix;
+uniform float u_emojiScale;
 
 attribute vec2 a_position;
 void main() {
   gl_Position = u_matrix * vec4(a_position, 0, 1);
-  gl_PointSize = 8.0;
+  gl_PointSize = 16.0*u_emojiScale;
 }
   </script>
   <script id="fs" type="notjs">
 precision mediump float;
+uniform sampler2D u_emoji;
+const float SHEET_SIZE = 64.0;
 
 void main() {
-  gl_FragColor = vec4(0,0,1,1);
+  vec2 emoji = vec2(23, 0);
+  gl_FragColor = texture2D(u_emoji, (gl_PointCoord+emoji) / SHEET_SIZE);
+  if(gl_FragColor.a <= 0.3) discard;
 }
   </script>
   <script src="vendor/twgl-full.js"></script>
