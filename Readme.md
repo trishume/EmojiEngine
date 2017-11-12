@@ -20,3 +20,7 @@ EmojiEngine (also known as :cry: Engine) is the world's best video game renderin
 - Renders the emoji front to back with depth testing to completely avoid overdraw.
 - Binary transparency by dropping fragments, no need for alpha blending.
 - Processes state updates entirely using linear iteration over JS typed arrays, so that even updating everything every frame in JS is fast.
+
+## License
+
+The code I wrote is released under the MIT license. The emoji data included is also under the MIT license from [here](https://github.com/iamcal/emoji-data). EmojiEngine also uses [twgl](https://github.com/greggman/twgl.js).
