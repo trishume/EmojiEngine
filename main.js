@@ -11,7 +11,7 @@ const textures = twgl.createTextures(gl, {
   }
 });
 
-const numItems = 80000;
+const numItems = 60000;
 const emojiDim = 49;
 const state = {
   aspect: 1.0,
